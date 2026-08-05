@@ -1,4 +1,5 @@
 
+# construct NORM confidence interval regarding to Jeng (3.1) for SEV distribution
 ci_NORM_Jeng <- function(t, t_c, alpha = 0.1) {
   # Jeng NORM, 
   
@@ -13,8 +14,6 @@ ci_NORM_Jeng <- function(t, t_c, alpha = 0.1) {
   se <- sqrt(diag(cov_matrix))
   se_mu <- se[1]
   se_sigma <- se[2]
-  # print(cov_matrix)
-  # cat("se mu = ", se_mu, " se_sigma = ", se_sigma, "\n")
   
   z <- qnorm(p = 1 - alpha/2)
   
@@ -51,36 +50,14 @@ ci_NORM_Jeng <- function(t, t_c, alpha = 0.1) {
 
 
 
-mle_Sundberg <- function(t, t_c) {
-  N <- sum(1 - get_delta(data = t, t_c = t_c))
-  
-  return(sum(t) / N)
-}
 
 
-# TODO warum mit dem mle von sundberg komplett anderes ergebnis als mit dem 
-# von sev_mle ???
-ci_NORM_Sundberg <- function(t, t_c, alpha = 0.1) {
-  
-  # maximum likelihood estimations
-  mu_hat <- mle_Sundberg(t, t_c)
-  
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
-  z <- qnorm(p = 1 - alpha / 2)
-  
-  ci <- c(mu_hat * (1 - z / sqrt(N)), mu_hat * (1 + z / sqrt(N)))
-  
-  return(unname(ci))
-}
-
-
-# TODO warum sind die CI so unterschiedlich? Liegt es an der Unterschiedlichen 
-# zugrundeliegenden verteilung (SEV)?
 ci_NORM_Jeng(t = ball_bearing_data, t_c = 40, alpha = 0.1)[1]
 ci_NORM_Jeng(t = ball_bearing_data, t_c = 60, alpha = 0.1)[1]
 
-ci_NORM_Sundberg(t = ball_bearing_data, t_c = 40, alpha = 0.1)  
-ci_NORM_Sundberg(t = ball_bearing_data, t_c = 60, alpha = 0.1)  
+C1_Sundberg(t = ball_bearing_data, t_c = 40, alpha = 0.1)  
+C1_Sundberg(t = ball_bearing_data, t_c = 60, alpha = 0.1) 
 
 
-
+# the CI differ a lot because the assumption of the underlying dist'n is different 
+# (SEV for Jeng vs. Exp for Sundberg)
