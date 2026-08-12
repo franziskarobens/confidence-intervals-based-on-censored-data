@@ -1,15 +1,19 @@
-# If data t is not censored then sqrt(n) (hat theta - theta) / hat theta is normal
-# but if t is censored, what distribution is that?
-# use a simulation
-# we use different censoring schemes
-# use exponential distributed data
+# Description ----------------------------------------------
 
+# Simulates with Monte Carlo the asymptotic distribution of 
+# standardized MLEs for the exponential rate parameter λ under different 
+# censoring schemes (uncensored, Type I, Type II, Hybrid Type I, Hybrid Type II)
 
-plot_standardized_MLE <- function(MLEs, lambda, n_s, is_censored) {
+# Helper Function ----------------------------------------------
+
+plot_standardized_MLE <- function(MLEs, lambda, n_s, C = NULL, is_censored) {
   
   if (is_censored) {
     title <- paste0("Standardized censored MLE vs. N(0,1) using t ~ Exp(", lambda, ") and C = ", C)
     expression_xlab <- expression(sqrt(N) * (hat(lambda) - lambda) / hat(lambda))
+    if (is.null(C)) {
+      stop("If data is censored, give C as an argument to plot_standardized_MLE()")
+    }
   } else {
     title <- paste0("Standardized uncensored MLE vs. N(0,1) using t ~ Exp(", lambda, ")")
     expression_xlab <- expression(sqrt(n) * (hat(lambda) - lambda) / hat(lambda))
@@ -41,9 +45,7 @@ plot_standardized_MLE <- function(MLEs, lambda, n_s, is_censored) {
 }
 
 
-# -----------------------------------------------------------------------
 # Type I Censoring ----------------------------------------------
-# -----------------------------------------------------------------------
 
 lambda <- 10
 C <- 0.1
@@ -92,12 +94,12 @@ plot_standardized_MLE(MLEs = res_exp$uncensored_MLEs,
 plot_standardized_MLE(MLEs = res_exp$censored_MLEs, 
   lambda = lambda, 
   n_s = res_exp$censored_N,
+  C = C,
   is_censored = TRUE
 )
 
-# -----------------------------------------------------------------------
+
 # Type II Censoring ----------------------------------------------
-# -----------------------------------------------------------------------
 
 lambda <- 10
 
@@ -156,12 +158,12 @@ plot_standardized_MLE(MLEs = res_exp$uncensored_MLEs,
 plot_standardized_MLE(MLEs = res_exp$censored_MLEs, 
   lambda = lambda, 
   n_s = res_exp$censored_N,
+  C = C,
   is_censored = TRUE
 )
 
-# -----------------------------------------------------------------------
+
 # Hybrid Type I Censoring ----------------------------------------------
-# -----------------------------------------------------------------------
 
 lambda <- 10
 
@@ -236,6 +238,7 @@ plot_standardized_MLE(MLEs = res_exp$uncensored_MLEs,
 plot_standardized_MLE(MLEs = res_exp$censored_MLEs, 
   lambda = lambda, 
   n_s = res_exp$censored_N,
+  C = C,
   is_censored = TRUE
 )
 
@@ -243,9 +246,8 @@ hist(res_exp$censored_N, breaks = 30)
 # gets cut off at m, otherwise normal distributed around WHAT VALUE?
 
 
-# -----------------------------------------------------------------------
+
 # Hybrid Type II Censoring ----------------------------------------------
-# -----------------------------------------------------------------------
 
 lambda <- 10
 
@@ -316,9 +318,34 @@ plot_standardized_MLE(MLEs = res_exp$uncensored_MLEs,
 plot_standardized_MLE(MLEs = res_exp$censored_MLEs, 
   lambda = lambda, 
   n_s = res_exp$censored_N,
+  C = C,
   is_censored = TRUE
 )
 
 hist(res_exp$censored_N, breaks = 30)
 # gets cut off at m, otherwise normally distributed around WHAT VALUE?
 
+
+
+# Observation -----------------------------------------
+"""
+The Fisher Info I(lambda) = D / lambda^2, whereas D is different for 
+different censoring schemes. If we choose D correctly then the standardized 
+MLEs are N(0, 1) distributed (note that hat lambda ~ N(lambda, D / lambda^2))
+
+Uncensored: D = n (length of data vector)
+Type I: D = N (Number of observations before C)
+Type II: D = m (predetermined parameter/ no randomness)
+Hybrid Type I: D = min(m, N) where N is the number of observations before C
+Hybrid Type II: D = max(m, N)
+
+So D is always the number of actually observed uncensored observations.
+If we devide by n instead of the correct D, then we will still get a normal distn
+but it is 
+sqrt(n) hat lambda - lambda / lambda  ~  N(0, n / D)
+where n / D > 1, so the variance of the standardized MLEs is greater.
+
+Problem: We need to keep track of the number of uncensored observations. 
+That is easy in the case of type II censoring (always D = m), but for other 
+censoring schemes, D is random. 
+"""
