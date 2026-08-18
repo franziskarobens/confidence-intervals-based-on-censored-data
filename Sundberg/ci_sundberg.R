@@ -6,78 +6,88 @@
 # @ params
 # t = c(t_1, ..., t_n) with t_i ~ Exp
 # t_c censoring time
-mle_Sundberg <- function(t, t_c) {
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+MLE_Sundberg <- function(t, t_c) {
+  N <- sum(t <= t_c) # number of uncensored
   t_obs <- pmin(t, t_c)
 
   return(sum(t_obs) / N)
 }
 
+
 # returns CI regarding to Sundberg (see C1)
 # @params
-# t is a n dimensional vector of observations whereas we assume 
+# t: is a n dimensional vector of observations whereas we assume 
 # they are exponentially distributed
-# t_c censoring time 
-# alpha confidence niveau for the CI
-
+# t_c: censoring time 
+# alpha: confidence niveau for the CI
 C1_Sundberg <- function(t, t_c, alpha = 0.1) {
   
   # maximum likelihood estimations
-  theta_hat <- mle_Sundberg(t, t_c)
+  theta_hat <- MLE_Sundberg(t, t_c)
   
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  N <- sum(t < t_c) # number of uncensored
   z <- qnorm(p = 1 - alpha / 2)
   
-  ci <- c(theta_hat * (1 - z / sqrt(N)), theta_hat * (1 + z / sqrt(N)))
+  C1 <- c(
+    theta_hat * (1 - z / sqrt(N)), 
+    theta_hat * (1 + z / sqrt(N))
+  )
   
-  return(unname(ci))
+  return(unname(C1))
 }
 
 
 C2_Sundberg <- function(t, t_c, alpha = 0.1) {
-  
   # maximum likelihood estimations
-  theta_hat <- mle_Sundberg(t, t_c)
+  theta_hat <- MLE_Sundberg(t, t_c)
   
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  N <- sum(t < t_c) # number of uncensored
   z <- qnorm(p = 1 - alpha / 2)
   
-  ci <- c(theta_hat / (1 + z / sqrt(N)), theta_hat / (1 - z / sqrt(N)))
+  C2 <- c(
+    theta_hat / (1 + z / sqrt(N)), 
+    theta_hat / (1 - z / sqrt(N))
+  )
   
-  return(unname(ci))
+  return(unname(C2))
 }
+
 
 C3_Sundberg <- function(t, t_c, alpha = 0.1) {
-  
   # maximum likelihood estimations
-  theta_hat <- mle_Sundberg(t, t_c)
+  theta_hat <- MLE_Sundberg(t, t_c)
   
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  N <- sum(t < t_c) # number of uncensored
   z <- qnorm(p = 1 - alpha / 2)
   
-  ci <- c(theta_hat * exp(- z / sqrt(N)), theta_hat * exp(z / sqrt(N)))
+  C3 <- c(
+    theta_hat * exp(- z / sqrt(N)), 
+    theta_hat * exp(z / sqrt(N))
+  )
   
-  return(unname(ci))
+  return(unname(C3))
 }
 
+
 C4_Sundberg <- function(t, t_c, alpha = 0.1) {
-  
   # maximum likelihood estimations
-  theta_hat <- mle_Sundberg(t, t_c)
+  theta_hat <- MLE_Sundberg(t, t_c)
   
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  N <- sum(t < t_c) # number of uncensored
   z <- qnorm(p = 1 - alpha / 2)
   
-  ci <- c(theta_hat / (1 + z / (3*sqrt(N)))^3, theta_hat / (1 - z / (3*sqrt(N)))^3)
+  C4 <- c(
+    theta_hat / (1 + z / (3*sqrt(N)))^3, 
+    theta_hat / (1 - z / (3*sqrt(N)))^3
+  )
   
-  return(unname(ci))
+  return(unname(C4))
 }
 
 
 C5_Sundberg <- function(t, t_c, alpha = 0.1) {
-  
-  theta_hat <- mle_Sundberg(t, t_c)
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  theta_hat <- MLE_Sundberg(t, t_c)
+  N <- sum(t < t_c) # number of uncensored
   z <- qnorm(p = 1 - alpha / 2)
   
   # h(theta) = 2N * (theta_hat/theta - 1 - log(theta_hat/theta)) - z^2
@@ -100,46 +110,39 @@ C5_Sundberg <- function(t, t_c, alpha = 0.1) {
   }
   b2 <- uniroot(h, interval = c(theta_hat, upper))$root
   
-  ci <- c(b1, b2)
+  C5 <- c(b1, b2)
   
-  return(unname(ci))
+  return(unname(C5))
 }
 
 
 
 C6_Sundberg <- function(t, t_c, alpha = 0.1) {
-  
-  theta_hat <- mle_Sundberg(t, t_c)
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  theta_hat <- MLE_Sundberg(t, t_c)
+  N <- sum(t < t_c) # number of uncensored
   q1 <- qchisq(p = 1 - alpha / 2, df = 2 * N)
   q2 <- qchisq(p = alpha / 2, df = 2 * N)
   
-  ci <- c(2 * N * theta_hat / q1, 2 * N * theta_hat / q2)
+  C6 <- c(
+    2 * N * theta_hat / q1, 
+    2 * N * theta_hat / q2
+  )
   
-  return(unname(ci))
+  return(unname(C6))
 }
 
 C7_Sundberg <- function(t, t_c, alpha = 0.1) {
   
-  theta_hat <- mle_Sundberg(t, t_c)
-  N <- sum(get_delta(data = t, t_c = t_c)) # number of uncensored
+  theta_hat <- MLE_Sundberg(t, t_c)
+  N <- sum(t < t_c) # number of uncensored
   q1 <- qchisq(p = 1 - alpha / 2, df = 2 * N + 1)
   q2 <- qchisq(p = alpha / 2, df = 2 * N + 1)
   
-  ci <- c(2 * N * theta_hat / q1, 2 * N * theta_hat / q2)
+  C7 <- c(2 * N * theta_hat / q1, 2 * N * theta_hat / q2)
   
-  return(unname(ci))
+  return(unname(C7))
 }
 
-
-C <- 0
-C1_Sundberg(t = ball_bearing_data, t_c = C)
-C2_Sundberg(t = ball_bearing_data, t_c = C)
-C3_Sundberg(t = ball_bearing_data, t_c = C)
-C4_Sundberg(t = ball_bearing_data, t_c = C)
-C5_Sundberg(t = ball_bearing_data, t_c = C)
-C6_Sundberg(t = ball_bearing_data, t_c = C)
-C7_Sundberg(t = ball_bearing_data, t_c = C)
 
 # Observation: confidence intervals C1 and C2 differ a lot from the remaining intervals
 # C3 - C7 are relatively similar

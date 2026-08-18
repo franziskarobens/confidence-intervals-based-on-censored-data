@@ -1,10 +1,12 @@
-# this file is for plotting the limits of the CI based on how many observations are censored
-# see Figures 1a and 1b in Sundberg
-
+# Replicate the Figures 1a and 1b in Sundberg
+# For this get the multipliers c_l and c_u from all methods (C1-C7) proposed in Sundberg
+# Plot the multipliers as a function of the uncensored observations N
+# To replicate the exact Figures 1a and 1b use the ball_bearing_data and alpha = 0.05
 
 library(ggplot2)
+source("Sundberg/CI_Sundberg.R")
 
-plot_ci_limits <- function(t, alpha) {
+plot_CI_limits <- function(t, alpha = 0.05) {
   N_range <- 1:length(t)
   
   methods <- list(
@@ -17,14 +19,15 @@ plot_ci_limits <- function(t, alpha) {
     C7_Sundberg    = C7_Sundberg
   )
 
+  #
   results <- list()
 
   for (N in N_range) {
     t_c <- sort(t)[N]
-    mle <- mle_Sundberg(t, t_c)
+    MLE <- MLE_Sundberg(t, t_c)
     
     for (method_name in names(methods)) {
-      ci <- tryCatch(
+      CI <- tryCatch(
         methods[[method_name]](t, t_c, alpha = alpha),
         error = function(e) {
           cat("ERROR in", method_name, "at N =", N, ":", conditionMessage(e), "\n")
@@ -34,16 +37,16 @@ plot_ci_limits <- function(t, alpha) {
       results[[length(results) + 1]] <- data.frame(
         N = N,
         method = method_name,
-        ci_l = ci[1],
-        ci_u = ci[2], 
-        c_l = ci[1] / mle,
-        c_u = ci[2] / mle 
+        CI_l = CI[1], # lower limit of the CI
+        CI_u = CI[2], # upper limit of the CI
+        c_l = CI[1] / MLE, # lower multiplier
+        c_u = CI[2] / MLE # upper multiplier
       )
     }
   }
 
+  # transform list of dataframes in one big dataframe
   results_df <- do.call(rbind, results)
-
 
   # plot lower c_l
   ggplot(results_df, aes(x = N, y = c_l, color = method)) +
@@ -71,6 +74,6 @@ plot_ci_limits <- function(t, alpha) {
 
 }
 
-
-plot_ci_limits(t = ball_bearing_data, alpha = 0.05)
+# Get Figures 1a and 1b from Sundberg
+# plot_CI_limits(t = ball_bearing_data, alpha = 0.05)
 
