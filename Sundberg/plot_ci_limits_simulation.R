@@ -1,3 +1,5 @@
+# Replicate the Figures from Sundberg
+
 
 source("plot_ci_limits.R")
 
@@ -15,5 +17,12 @@ C4_Sundberg(t, t_c = C)
 C5_Sundberg(t, t_c = C)
 C6_Sundberg(t, t_c = C)
 C7_Sundberg(t, t_c = C)
+
+
+t <- rsev(n = 100, mu = 4, sigma = 3)
+C <- 4
+
+ci_NORM_Jeng(t, t_c = C) # hier wird die fisher nicht berechnet weil die hesse Nullmatrix ist 
+# TBD das fixen
 
 plot_ci_limits(t = t, alpha = 0.1)

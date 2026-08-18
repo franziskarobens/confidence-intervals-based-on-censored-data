@@ -163,8 +163,10 @@ mle_sev <- function(t, t_c, draw = FALSE) {
   
   if(fit$convergence != 0) return(NA)
   
-  fit$fisher <- solve(fit$hessian)
-  
+  fit$fisher <- tryCatch(
+    solve(fit$hessian),
+    error = function(e) NULL
+  )
   return(fit)
 }
 
