@@ -111,3 +111,24 @@ test_sev_functions()
 test_get_delta()
 test_lik_sev()
 test_loglik_sev()
+
+
+# ---------- Test F_sum_given_N() ---------------
+
+
+test_F_sum_given_N <- function() {
+
+
+  actual_1 <- F_sum_given_N(z = 0, N = 10, C = 1, theta = 1)
+  actual_2 <- F_sum_given_N(z = 0, N = 1, C = 1, theta = 1)
+  actual_3 <- F_sum_given_N(z = 1, N = 0, C = 1, theta = 1, Tmax = 1)
+  actual_4 <- F_sum_given_N(z = 1, N = 0, C = 1, theta = 1, Tmax = 2)
+  actual_5 <- F_sum_given_N(z = 1, N = 0, C = 1, theta = 1, Tmax = 200)
+
+
+  expected_1 <- 0
+  expected_2 <- 0
+  expected_3 <- 0.946083
+  expected_4 <- 1.60541
+  expected_5 <- 1.56838
+}

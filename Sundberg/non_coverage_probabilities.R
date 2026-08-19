@@ -110,7 +110,8 @@ F_sum_given_N <- function(z, N, C, theta, Tmax = 300, subdivisions = 3000L) {
 
   Fz <- (2 / pi) * I
   # Numerical guard: clip tiny overshoots from oscillatory integration
-  min(max(Fz, 0), 1)
+  # min(max(Fz, 0), 1)
+  return(Fz)
 }
 
 
@@ -123,7 +124,7 @@ coverage_prob <- function(t, n, C, theta, Tmax = 300) {
   total <- 0
   for (N in 0:n) {
     bin_prob <- dbinom(N, size = n, prob = p)
-    if (bin_prob < 1e-14) next   # skip negligible terms (speed)
+    # if (bin_prob < 1e-14) next   # skip negligible terms (speed)
 
     z  <- N * t - (n - N) * C
     Fz <- F_sum_given_N(z, N, C, theta, Tmax = Tmax)
@@ -143,7 +144,7 @@ n_range <- 4:50
 theta <- 1
 alpha <- 0.01
 C <- theta / 2
-Tmax <- 1000
+Tmax <- 300
 
 # Storage for noncoverage probabilities
 
@@ -226,9 +227,11 @@ for (n in n_range) {
       i
     ] <- 1 + p_lower - p_upper
 
+    cat("n = ", n, ", i = ", i, " result = ", 1 + p_lower - p_upper, "\n")
+
     # Update progress bar
     progress <- progress + 1
-    setTxtProgressBar(pb, progress)
+    #setTxtProgressBar(pb, progress)
   }
 }
 
@@ -283,7 +286,5 @@ ggplot(
   ) +
   geom_hline(yintercept = alpha, color = "black", linetype = "dashed", linewidth = 0.5)
 
-
 # TODO: die Simulation zeigt noch nicht die gewünschte Non Coverage Probability. 
 # entweder sind die CI falsch oder die simulation an sich (wahrscheinlicher)
-# 
