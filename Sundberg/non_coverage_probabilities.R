@@ -1,6 +1,7 @@
 # Replicate Figures 2-5 in Sundberg
 # Use calculation Methods presented in Section 3 of Sundberg
 
+library(ggplot2)
 source("Sundberg/truncated_exp_distn.R")
 
 theta <- 1
@@ -134,24 +135,17 @@ coverage_prob <- function(t, n, C, theta, Tmax = 300) {
 }
 
 
-# ---- 4. Example: coverage probability for all Ci ----
+# ---- 4. non coverage probability for all Ci ----
 
-library(ggplot2)
-
-# ---------------------------------------------------------
 # Settings
-# ---------------------------------------------------------
 
 n_range <- 4:50
-
 theta <- 1
-alpha <- 0.1
+alpha <- 0.01
 C <- theta / 2
 Tmax <- 1000
 
-# ---------------------------------------------------------
 # Storage for noncoverage probabilities
-# ---------------------------------------------------------
 
 non_coverage_prob <- matrix(
   NA_real_,
@@ -163,9 +157,7 @@ non_coverage_prob <- matrix(
   )
 )
 
-# ---------------------------------------------------------
 # Progress bar
-# ---------------------------------------------------------
 
 pb <- txtProgressBar(
   min = 0,
@@ -175,9 +167,7 @@ pb <- txtProgressBar(
 
 progress <- 0
 
-# ---------------------------------------------------------
 # Main calculation
-# ---------------------------------------------------------
 
 for (n in n_range) {
 
@@ -196,10 +186,7 @@ for (n in n_range) {
     next
   }
 
-  # -------------------------------------------------------
   # Calculate C1_Sundberg() ... C7_Sundberg()
-  # -------------------------------------------------------
-
   for (i in 1:7) {
 
     # Get the appropriate function:
@@ -247,9 +234,7 @@ for (n in n_range) {
 
 close(pb)
 
-# ---------------------------------------------------------
 # Convert results to data frame for ggplot
-# ---------------------------------------------------------
 
 results <- as.data.frame(non_coverage_prob)
 
@@ -267,9 +252,14 @@ results_long <- reshape(
 # Clean row names
 rownames(results_long) <- NULL
 
-# ---------------------------------------------------------
 # Plot
-# ---------------------------------------------------------
+
+title_text <- paste(
+  "Noncoverage probabilities for Sundberg CIs with",
+  "theta =", theta,
+  ", C =", C,
+  "and alpha =", alpha
+)
 
 ggplot(
   results_long,
@@ -282,12 +272,7 @@ ggplot(
   geom_line(linewidth = 1) +
   geom_point(size = 1.5) +
   labs(
-    title = bquote(
-      "Noncoverage probabilities for Sundberg CIs with " *
-      theta == .(theta) * ",  " *
-      C == .(C) " and " *
-      alpha == .(alpha)
-    ),
+    title = title_text,
     x = "Sample size n",
     y = "Noncoverage probability",
     color = "Method"
@@ -295,5 +280,10 @@ ggplot(
   theme_minimal(base_size = 14) +
   theme(
     legend.position = "right"
-  )
+  ) +
+  geom_hline(yintercept = alpha, color = "black", linetype = "dashed", linewidth = 0.5)
 
+
+# TODO: die Simulation zeigt noch nicht die gewünschte Non Coverage Probability. 
+# entweder sind die CI falsch oder die simulation an sich (wahrscheinlicher)
+# 
