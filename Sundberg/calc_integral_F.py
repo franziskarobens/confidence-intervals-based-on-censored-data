@@ -14,6 +14,8 @@ Type I censored exponential coverage-probability calculations
 
 import numpy as np
 from scipy import integrate
+import matplotlib.pyplot as plt
+
 
 
 def phi(t, theta, C):
@@ -52,8 +54,7 @@ def fourier_inversion_integral(T, z, N, theta, C):
     """
 
     if N == 0:
-        # Sum of zero terms is a point mass at 0
-        return 1.0 if z >= 0 else 0.0
+        return 0.5 * np.sign(z)
 
     def integrand_real(t):
         # Handle the removable singularity at t = 0
@@ -74,7 +75,8 @@ def fourier_inversion_integral(T, z, N, theta, C):
     )
 
     F = (2.0 / np.pi) * integral
-    return float(min(max(F, 0.0), 1.0))
+    # return float(min(max(F, 0.0), 1.0))
+    return float(F)
 
 
 if __name__ == "__main__":
@@ -85,16 +87,41 @@ if __name__ == "__main__":
     actual_3 = fourier_inversion_integral(z = 1, N = 0, C = 1, theta = 1, T = 1)
     actual_4 = fourier_inversion_integral(z = 1, N = 0, C = 1, theta = 1, T = 2)
     actual_5 = fourier_inversion_integral(z = 1, N = 0, C = 1, theta = 1, T = 200)
-
+    actual_6 = fourier_inversion_integral(z = 1, N = 0, C = 1, theta = 1, T = 5000)
+    actual_7 = fourier_inversion_integral(z = -1, N = 0, C = 1, theta = 1, T = 5000)
+    
 
     expected_1 = 0
     expected_2 = 0
     expected_3 = 0.946083 / np.pi
     expected_4 = 1.60541 / np.pi
     expected_5 = 1.56838 / np.pi
+    expected_6 = 0.5
+    expected_7 = - 0.5
+
 
     print(f"actual_1 = {actual_1:.6f}, expected_1 = {expected_1:.6f}")
     print(f"actual_2 = {actual_2:.6f}, expected_2 = {expected_2:.6f}")                
     print(f"actual_3 = {actual_3:.6f}, expected_3 = {expected_3:.6f}")
     print(f"actual_4 = {actual_4:.6f}, expected_4 = {expected_4:.6f}")
     print(f"actual_5 = {actual_5:.6f}, expected_5 = {expected_5:.6f}")
+    print(f"actual_6 = {actual_6:.6f}, expected_6 = {expected_6:.6f}")
+    print(f"actual_7 = {actual_7:.6f}, expected_7 = {expected_7:.6f}")
+
+
+    T = 100
+    N = 2
+    theta = 10
+    C = 20
+   
+    z_values = np.linspace(-1, 40, 400)
+    F_values = [fourier_inversion_integral(T=T, z=z, N=N, theta=theta, C=C) for z in z_values]
+
+    fig, ax = plt.subplots()
+    ax.plot(z_values, F_values, linewidth=1.5)
+    ax.set_xlabel("z")
+    ax.set_ylabel("F(z|N)")
+    ax.set_title(f"fourier_inversion_integral(N={N}, C={C}, theta={theta}, T={T})")
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    fig.savefig("fourier_integral_plot.png", dpi=150)
