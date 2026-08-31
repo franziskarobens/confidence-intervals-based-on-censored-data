@@ -64,7 +64,6 @@ ggplot(results_df, aes(x = n, y = non_coverage, color = type)) +
   labs(
     x = "n (sample size)",
     y = "P(non-coverage)",
-    title = "Non-coverage probability: exact vs. asymptotic CI",
     color = "CI type"
   ) +
   theme_minimal()

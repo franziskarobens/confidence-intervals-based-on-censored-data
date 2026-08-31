@@ -1,7 +1,7 @@
 # Replicate the Figures from Sundberg
 
 
-source("plot_ci_limits.R")
+source("Sundberg/plot_CI_limits.R")
 
 theta <- 100
 lambda <- 1 / theta
@@ -25,4 +25,4 @@ C <- 4
 ci_NORM_Jeng(t, t_c = C) # hier wird die fisher nicht berechnet weil die hesse Nullmatrix ist 
 # TBD das fixen
 
-plot_ci_limits(t = t, alpha = 0.1)
+plot_CI_limits(t = t, alpha = 0.1)
