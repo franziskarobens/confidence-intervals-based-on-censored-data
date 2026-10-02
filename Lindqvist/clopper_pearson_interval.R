@@ -4,7 +4,7 @@
 n <- 100
 alpha <- 0.05
 
-n_simulations <- 10000000
+n_simulations <- 10^7
 theta_in_upper_CI <- logical(n_simulations)
 theta_in_lower_CI <- logical(n_simulations)
 
