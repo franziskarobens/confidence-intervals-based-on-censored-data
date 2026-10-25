@@ -3,22 +3,32 @@
 sundberg_data <- c(4, 5, 8, 11, 20, 29, 35, 40, 66, 70)
 alpha = 0.05
 
-# Results from Sundberg Table 1
+# for left column, set t_c <- 50
+# for right column, set t_c <- 75
+t_c <- 50
+r <- sum(sundberg_data < t_c)
+S <- sum(pmin(sundberg_data, t_c))
+MLE <-  r / S
 
-C1_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
-C2_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
-C3_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
-C4_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
-C5_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
-C6_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
-C7_Sundberg(t = sundberg_data, t_c = 50, alpha = alpha)
+# results for the parametrization rate = theta
+C1_Sundberg(r, alpha = alpha) * MLE
+C2_Sundberg(r, alpha = alpha) * MLE
+C3_Sundberg(r, alpha = alpha) * MLE
+C4_Sundberg(r, alpha = alpha) * MLE
+C5_Sundberg(r, alpha = alpha) * MLE
+C6_Sundberg(r, alpha = alpha) * MLE
+C7_Sundberg(r, alpha = alpha) * MLE
 
-C1_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
-C2_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
-C3_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
-C4_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
-C5_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
-C6_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
-C7_Sundberg(t = sundberg_data, t_c = 75, alpha = alpha)
+# results for the parametrization rate = 1 / theta (like in Sundberg)
+# note that C1 and C2 are swapped
+1 / (C1_Sundberg(r, alpha = alpha) * MLE) # C2
+1 / (C2_Sundberg(r, alpha = alpha) * MLE) # C1
+1 / (C3_Sundberg(r, alpha = alpha) * MLE) 
+1 / (C4_Sundberg(r, alpha = alpha) * MLE) # wrong
+1 / (C5_Sundberg(r, alpha = alpha) * MLE)
+1 / (C6_Sundberg(r, alpha = alpha) * MLE) # wrong
+1 / (C7_Sundberg(r, alpha = alpha) * MLE) # wrong
 
-# -> exactly the results from Table 1 in Sundberg
+
+# die CI aus CI_Sundberg.R liefern genau die ergebnisse von Sundberg.
+# Was ist unterschiedlich?

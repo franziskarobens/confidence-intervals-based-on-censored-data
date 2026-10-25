@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------
 # Fiducial inference simulation for n = 2 (Section 6 example)
 # 
-# Setting: c = 1, one failure at Y1 = 0.5, one censoring at Y2 = 1
+# Setting: c = 1, one failure at Y_1 = 0.5, one censoring at Y_2 = 1
 # => R = 1, S = 3/2, T = t = 2/3
 #
 # For a simulated pair u = (u1, u2) with order statistics u(1) <= u(2):
@@ -13,7 +13,7 @@
 #   theta(u, t) = 2*u(1)   conditional on  u(2) >= 2*u(1)
 # --------------------------------------------------------------------------
 
-set.seed(123)
+set.seed(2026)
 
 c_val <- 1
 t_val <- 2 / 3
@@ -30,7 +30,7 @@ u_max <- pmax(U1, U2)   # u(2)
 # theta = 2*u(1) if u(2) >= 2*u(1), else theta = u(2)
 theta_full <- ifelse(u_max >= 2 * u_min, 2 * u_min, u_max)
 
-# --- Fiducial version (5): only keep draws where u(2) >= 2*u(1) -----------
+# --- Fiducial version from Eq. (5): only keep draws where u(2) >= 2*u(1) ---
 fiducial_condition <- u_max >= 2 * u_min
 theta_fiducial <- 2 * u_min[fiducial_condition]
 
@@ -48,15 +48,13 @@ cat("95% CI (fiducial version, conditional): [",
 # -> same values as in paper
 
 # --------------------------------------------------------------------------
-# Plot: two histograms side by side, matching "Figure 2" in the text
+# Plot: two histograms, matching Figure 2 in Lindqvist
 # --------------------------------------------------------------------------
 par(mfrow = c(1, 2))
 
-hist(theta_full, breaks = 100, freq = FALSE, xlim = c(0, 5),
-     main = expression(theta(u, t == 2/3)),
-     xlab = expression(theta), ylab = "Density",
-     col = "lightblue", border = "white")
-abline(v = CI_full, col = "red", lty = 2, lwd = 2)
+hist(theta_full, breaks = 600, freq = FALSE, xlim = c(0, 5), ylim = c(0, 1.5),
+     xlab = expression(theta), ylab = "Density")
+abline(v = CI_full, col = "red", lty = 2, lwd = 1)
 
 # Given: F_theta(x) = 2*exp(-2*x) - exp(-3*x)   (survival function)
 # Density = -d/dx F(x) = 4*exp(-2*x) - 3*exp(-3*x)
@@ -64,20 +62,18 @@ abline(v = CI_full, col = "red", lty = 2, lwd = 2)
 x_grid <- seq(0, 5, length.out = 500)
 density_theta <- 4 * exp(-2 * x_grid) - 3 * exp(-3 * x_grid)
 
-lines(x_grid, density_theta, col = "darkred", lwd = 2)
+lines(x_grid, density_theta, col = "red", lwd = 2)
 
 legend("topright", legend = "Theoretical density", col = "darkred", lwd = 2, bty = "n")
 
-hist(theta_fiducial, breaks = 100, freq = FALSE, xlim = c(0, 5),
-     main = "Fiducial distribution (5)",
-     xlab = expression(theta), ylab = "Frequency",
-     col = "lightgreen", border = "white")
+hist(theta_fiducial, breaks = 600, freq = FALSE, xlim = c(0, 5), ylim = c(0, 1.5),
+     xlab = expression(theta), ylab = "Density")
 abline(v = CI_fiducial, col = "red", lty = 2, lwd = 2)
 
 x_grid <- seq(0, 5, length.out = 500)
 density_theta <- 3 / 2 * exp(- 3/2 * x_grid)
 
-lines(x_grid, density_theta, col = "darkred", lwd = 2)
+lines(x_grid, density_theta, col = "red", lwd = 2)
 
 legend("topright", legend = "Theoretical density Exp(3/2)", col = "darkred", lwd = 2, bty = "n")
 
@@ -158,17 +154,19 @@ theta_from_u <- function(u, t, c) {
 
 
 # ----- Check coverage probabilities of bounds and CI -----------------------------------------
+# see end of page 5 in Lindqvist
 
 n <- 10
 c <- 1
 theta_true <- 1
 n_simulation <- 10000
 m <- 1000
+alpha <- 0.05
 
-R_values <- numeric(n_simulations)
-T_values <- numeric(n_simulations)
-lower_bounds <- numeric(n_simulations)
-upper_bounds <- numeric(n_simulations) 
+R_values <- numeric(n_simulation)
+T_values <- numeric(n_simulation)
+lower_bounds <- numeric(n_simulation)
+upper_bounds <- numeric(n_simulation) 
 
 pb <- txtProgressBar(
   min = 0,
@@ -181,9 +179,8 @@ for (sim in 1:n_simulation) {
   # Generate n = 10 exponential lifetimes with true hazard theta = 1
   X <- rexp(n, rate = theta_true)
 
-  # Type-I censoring at c = 1
+  # Type-I censoring at c
   Y <- pmin(X, c_val)
-
 
   # Number of observed failures
   R <- sum(X < c_val)
@@ -192,12 +189,10 @@ for (sim in 1:n_simulation) {
   # Total observed time
   S <- sum(Y)
 
-
   # MLE
   # T = R/S
   t <- R / S
   T_values[sim] <- t
-
 
   # Generate m = 1000 vectors U
   # Each row is one vector: U = (U1,...,U10) where Ui ~ Exp(1)
@@ -207,19 +202,16 @@ for (sim in 1:n_simulation) {
     ncol = n
   )
 
-
   # Calculate theta(U,t) for each of the m simulated U-vectors
   theta_values <- numeric(m)
 
   for (j in 1:m) {
-
     theta_values[j] <- theta_from_u(
       U_matrix[j, ],
       t,
       c_val
     )
   }
-
 
   # Fiducial/confidence limits: remove 2.5% from each tail
   bounds <- quantile(
@@ -273,8 +265,6 @@ cat(round(100 * upper_coverage, 2), "%\n\n")
 cat("Coverage of two-sided interval:\n")
 cat(round(100 * two_sided_coverage, 2), "%\n\n")
 
-cat("Nominal coverage = 95%\n")
 
 
-
-# ------ 
+# -----  

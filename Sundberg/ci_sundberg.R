@@ -1,5 +1,6 @@
 # Description
-# TBD
+# confidence intervals C1, ..., C7 given in Sundberg using 
+# X_1 , ... , X_n ~ Exp(1 / theta), so RATE = 1/THETA
 
 
 # returns MLE given by Sundberg in equation (2) in chapter 2.2
@@ -17,7 +18,7 @@ MLE_Sundberg <- function(t, t_c) {
 # returns CI regarding to Sundberg (see C1)
 # @params
 # t: is a n dimensional vector of observations whereas we assume 
-# they are exponentially distributed
+# they are exponentially distributed (rate = 1 / theta)
 # t_c: censoring time 
 # alpha: confidence niveau for the CI
 C1_Sundberg <- function(N = NULL, t = NULL, t_c = NULL, alpha = 0.1) {
@@ -227,9 +228,12 @@ C5_Sundberg <- function(t, t_c, alpha = 0.1) {
   b2 <- uniroot(h, interval = c(theta_hat, upper))$root
   
   C5 <- c(b1, b2)
+  MLE <- MLE_Sundberg(t, t_c)
   
   return(list(
-      CI = unname(C5)
+      CI = unname(C5),,
+      c_lower = C5[1] / MLE,
+      c_upper = C5[2] / MLE
     )
   )
 }
@@ -356,6 +360,8 @@ for (n in n_seq) {
 
   n_sim <- 1000
   theta <- 1
+  c <- 1
+  alpha <- 0.1
 
   is_in_C1 <- 0
   is_in_C2 <- 0
@@ -378,31 +384,31 @@ for (n in n_seq) {
     t <- rexp(n = n, rate = 1 / theta)
 
     C1 <- tryCatch(
-      C1_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C1_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
     C2 <- tryCatch(
-      C2_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C2_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
     C3 <- tryCatch(
-      C3_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C3_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
     C4 <- tryCatch(
-      C4_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C4_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
     C5 <- tryCatch(
-      C5_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C5_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
     C6 <- tryCatch(
-      C6_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C6_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
     C7 <- tryCatch(
-      C7_Sundberg(t = t, t_c = 1, alpha = 0.1)$CI,
+      C7_Sundberg(t = t, t_c = c, alpha = alpha)$CI,
       error = function(e) NULL
     )
 

@@ -6,7 +6,8 @@ library(ggplot2)
 
 n <- 0:10
 
-alpha <- 0.1
+alpha <- 0.01
+color <- if (alpha == 0.1) "red" else "blue"
 
 # Multipliers for C2 from Sundberg
 multipliers <- C2_Sundberg(N = n, alpha = alpha)
@@ -18,15 +19,18 @@ widths <- c_upper - c_lower
 
 plot_df <- data.frame(n = n, width = widths)
 
+# For all n < z, it holds c_l > c_u.
+z <- qnorm(1 - alpha / 2)^2
+
+
 ggplot(plot_df, aes(x = n, y = width)) +
-  geom_point(size = 2) +
+  geom_point(size = 2, color = color) +
   labs(
     x = "n",
     y = expression(c[u] - c[l]),
   ) +
   scale_x_continuous(breaks = n) +
-  theme_minimal()
+  theme_minimal() + 
+  geom_vline(xintercept=z, col = color)
 
-# For all n < z, it holds c_l > c_u.
-qnorm(1 - alpha / 2)^2
 
