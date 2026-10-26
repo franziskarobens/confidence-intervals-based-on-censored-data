@@ -1,7 +1,6 @@
+# SMALLEST EXTREME VALUE DISTRIBUTION (SEV)
 # -------------------------------------------
 # If T ~ Weibull, then Y = log(T) ~ SEV
-
-
 
 # SEV density
 dsev <- function(y, mu = 0, sigma = 1){

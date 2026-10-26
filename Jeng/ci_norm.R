@@ -50,14 +50,18 @@ ci_NORM_Jeng <- function(t, t_c, alpha = 0.1) {
 
 
 
-
-
 ci_NORM_Jeng(t = ball_bearing_data, t_c = 40, alpha = 0.1)[1]
 ci_NORM_Jeng(t = ball_bearing_data, t_c = 60, alpha = 0.1)[1]
 
-C1_Sundberg(t = ball_bearing_data, t_c = 40, alpha = 0.1)  
-C1_Sundberg(t = ball_bearing_data, t_c = 60, alpha = 0.1) 
+r_40 <- sum(ball_bearing_data <= 40)
+MLE_40 <- mle_sev(t = ball_bearing_data, t_c = 40)$par["mu"]
+C1 <- C1_Sundberg(r = r_40, alpha = 0.1) * MLE_40
+C1
 
+r_60 <- sum(ball_bearing_data <= 60)
+MLE_60 <- mle_sev(t = ball_bearing_data, t_c = 60)$par["mu"]
+C2 <- C1_Sundberg(r = r_60, alpha = 0.1) * MLE_60
+C2
 
 # the CI differ a lot because the assumption of the underlying dist'n is different 
 # (SEV for Jeng vs. Exp for Sundberg)

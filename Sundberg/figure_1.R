@@ -1,6 +1,5 @@
 # Replicate Figure 1a and 1b in Sundberg
 
-
 library(ggplot2)
 library(tidyr)
 library(dplyr)
