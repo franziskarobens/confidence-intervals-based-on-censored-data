@@ -22,7 +22,7 @@ for (N in N_range) {
         list(c_lower = NA_real_, c_upper = NA_real_)
       }
     )
-    res[row, ] <- c(N, nr, lim$c_lower, lim$c_upper)
+    res[row, ] <- c(N, nr, lim["c_lower"], lim["c_upper"])
     row <- row + 1
   }
 }
