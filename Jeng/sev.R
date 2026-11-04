@@ -22,9 +22,9 @@ rsev <- function(n, mu = 0, sigma = 1) {
 }
 
 # p quantile of SEV(0, 1) regarding to Jeng (2.1)
-qsev <- function(q, mu = 0, sigma = 1) {
-  c_q <- log(- log(1 - q))
-  mu + sigma * c_q 
+qsev <- function(p, mu = 0, sigma = 1) {
+  c_p <- log(- log(1 - p))
+  mu + sigma * c_p 
 }
 
 

@@ -1,5 +1,5 @@
 
-ci_LLR <- function(t, t_c, alpha) {
+LLR_CI <- function(t, t_c, alpha) {
   
   # maximum likelihood estimations
   fit <- mle_sev(t, t_c)
@@ -74,5 +74,5 @@ ci_LLR <- function(t, t_c, alpha) {
   ))
 }
 
-ci_LLR(t = ball_bearing_data, t_c = 60, alpha = 0.9)
+LLR_CI(t = ball_bearing_data, t_c = 60, alpha = 0.9)
 

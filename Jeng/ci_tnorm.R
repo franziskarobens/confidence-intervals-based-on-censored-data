@@ -23,6 +23,14 @@ g_identity <- function() {
   )
 }
 
+g_one_third <- function() {
+  list(
+    g     = function(x) x^(-1/3),
+    g_inv = function(x) x^(-3),
+    g_der = function(x) (- 1 / 3) * x^(- 4 / 3)
+  )
+}
+
 # logit transform: g(x) = log(x / (1 - x)), for x in (0, 1)
 # use for probability parameter
 g_logit <- function() {
@@ -63,10 +71,10 @@ ci_TNORM_Jeng <- function(t, t_c, g, alpha = 0.1) {
   # using transformation g: CI on g-scale is g(theta_hat) +- z*se(g(theta_hat)),
   # then back-transformed via g_inv
   tnorm_ci <- function(theta_hat, se_theta) {
-    g_hat <- g$g(theta_hat)
-    se_g  <- g$g_der(theta_hat) * se_theta
-    ci_g  <- c(g_hat - z * se_g, g_hat + z * se_g)
-    g$g_inv(ci_g)
+    g_hat <- g$g(theta_hat)                             # g(hat theta)
+    se_g  <- g$g_der(theta_hat) * se_theta              # g'(hat theta) * se
+    ci_g  <- c(g_hat - z * se_g, g_hat + z * se_g)      # g(hat theta) +- z * se_g
+    g$g_inv(ci_g)                                       # g^{-1}(g(hat theta) +- z * se_g)
   }
   
   ci_mu    <- tnorm_ci(mu_hat, se_mu)
@@ -97,4 +105,5 @@ ci_TNORM_Jeng <- function(t, t_c, g, alpha = 0.1) {
 }
 
 ci_TNORM_Jeng(t = ball_bearing_data, t_c = 60, g = g_arctan(), alpha = 0.1)[1]
+ci_TNORM_Jeng(t = ball_bearing_data, t_c = 60, g = g_log(), alpha = 0.1)[1]
 ci_NORM_Jeng(t = ball_bearing_data, t_c = 60, alpha = 0.1)[1]

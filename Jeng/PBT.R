@@ -7,7 +7,8 @@ sim_T <- function(n, r, theta) {
   sum(x[1:r]) + (n - r) * x[r]          # = sum(pmin(x, x[r]))
 }
 
-PBT_CI <- function(T_obs, n, r, alpha = 0.05, B = 10000) {
+# PBT Procedure for Exp distributed RV
+PBT_CI <- function(T_obs, n, r, alpha = 0.1, B = 2000) {
 
   theta_hat <- r / T_obs                 # MLE
   se_hat    <- theta_hat / sqrt(r)       # sqrt(1 / I(theta_hat)), I = r / theta^2
@@ -29,7 +30,8 @@ PBT_CI <- function(T_obs, n, r, alpha = 0.05, B = 10000) {
 # Example
 n <- 30
 r <- 10
-x <- sort(rexp(n, rate = 0.5))
+x <- sort(rexp(n, rate = 50))
 T_obs <- sum(x[1:r]) + (n - r) * x[r]
 
-PBT_CI(T_obs, n = n, r = r, alpha = 0.05, B = 10000, seed = 1)
+PBT_CI(T_obs, n = n, r = r, alpha = 0.1, B = 2000)
+
