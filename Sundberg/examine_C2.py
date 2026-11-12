@@ -13,7 +13,7 @@ from sundberg import C2
 
 n = np.arange(0, 11)                    # 0, ...., 10
 
-alpha = 0.01
+alpha = 0.1        # in {0.01, 0.1} 
 color = "red" if alpha == 0.1 else "blue"
 
 # Multipliers for C2 from Sundberg (uncensored case: r = n)

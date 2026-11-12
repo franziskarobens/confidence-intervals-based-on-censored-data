@@ -3,21 +3,25 @@ below and save the results in "non_coverage_probs".
 nu = np.inf means no censoring.
 ci_type = 1: two CSVs per combination (lower-bounded CI, upper-bounded CI)
 ci_type = 2: one CSV per combination (two-sided CI)"""
-from itertools import product
+import sys
 from pathlib import Path
+
+# parent folder of the current working directory (notebook)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # -> ...\Sundberg
+
 import numpy as np
 import pandas as pd
 from CensoPy import *
 import sundberg
 from tqdm import tqdm
 from scipy.stats import chi2
-
+from itertools import product
 
 # ---------------------------------------------------------------------------
 # Parameters: every list is run through, all combinations are computed.
 # ---------------------------------------------------------------------------
 theta_list = [1]
-nu_list = [1]    # in {0.5, 1, 2, np.inf}; np.inf = no censoring
+nu_list = [0.5, 1, 2, np.inf]    # in {0.5, 1, 2, np.inf}; np.inf = no censoring
 alpha_list = [0.05]              # in {0.01, 0.05, 0.1}
 Digits_list = [100]              # works for >= 50 (ignored if nu = np.inf)
 ci_type = 1                      # 1: one sided CIs, 2: two sided CI
@@ -25,7 +29,7 @@ ci_type = 1                      # 1: one sided CIs, 2: two sided CI
 n_range = range(4, 51)           # 4, ..., 50
 methods = range(1, 8)            # C1, ..., C7
 
-overwrite = True                 # False: skip combinations whose CSV already exists
+overwrite = False                 # False: skip combinations whose CSV already exists
 
 out_dir = Path(__file__).resolve().parent
 csv_dir = out_dir / "non_coverage_probs"

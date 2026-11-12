@@ -20,7 +20,7 @@ for N in N_range:
             with warnings.catch_warnings(), np.errstate(divide="ignore", invalid="ignore"):
                 warnings.simplefilter("ignore")   # C2 warns for r < z^2
                 c_lower, c_upper = sundberg.CI(method_nr=nr, r=N, alpha=alpha,
-                                               theta_is_rate=True)
+                                               theta_is_rate=False) # set 'theta_is_rate=False' to get exact results from Sundberg
             c_lower, c_upper = float(c_lower), float(c_upper)
         except Exception as e:
             warnings.warn(f"C{nr}, N = {N}: {e}")

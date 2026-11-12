@@ -1,3 +1,6 @@
+# Create a helping plot for understanding the 
+# theory behind the construction of C5
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import lambertw

@@ -18,15 +18,15 @@ import numpy as np
 # they are part of the file name. Write them exactly as in the original script
 # (e.g. theta = 1 gives "theta1", theta = 1.0 gives "theta1.0").
 # ---------------------------------------------------------------------------
-nu = np.inf                  # in {0.5, 1, 2, np.inf}
+nu = 0.5                  # in {0.5, 1, 2, np.inf}
 alpha = 0.05                 # in {0.01, 0.05, 0.1}; for ci_type = 1 the one-sided level
 theta = 1
 Digits = 100
 ci_type = 1                  # 1: one sided CI, 2: two sided CI
 
 methods = range(1, 8)        # C1, ..., C7  (use e.g. [5, 6, 7] for a subset)
-ylim_width = 0.04            # y-axis shows alpha +- ylim_width; None = automatic
-save_plot = False             # save the figures as png and pdf
+y_limits = [0, 0.2]        # y-axis shows y_limits; None = automatic
+save_plot = True             # save the figures as png and pdf
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -73,8 +73,8 @@ def plot_kind(kind):
     ax.set_title(rf"{kind_titles[kind]}: $\nu$ = {nu:g}, $\alpha$ = {alpha:g}, "
                  rf"$\theta$ = {theta:g}, Digits = {Digits}")
 
-    if ylim_width is not None:
-        ax.set_ylim(max(0, alpha - ylim_width), alpha + ylim_width)
+    if y_limits is not None:
+        ax.set_ylim(y_limits)
 
     ax.legend(ncol=2)
 

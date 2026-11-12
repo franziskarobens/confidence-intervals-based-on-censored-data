@@ -37,8 +37,9 @@ def C3(r, alpha):
 def C4(r, alpha):
     z = norm.ppf(1 - alpha / 2)
     r = np.asarray(r, dtype=float)
-    return Limits(1 / (1 + z / (3 * np.sqrt(r)))**3,
-                  1 / (1 - z / (3 * np.sqrt(r)))**3)
+    a = z / (3 * np.sqrt(r))
+    return Limits((1 - a)**3,
+                  (1 + a)**3)
 
 
 def C5(r, alpha):
@@ -66,7 +67,7 @@ def C7(r, alpha):
     return Limits(c1 / (2 * r), c2 / (2 * r))
 
 
-# combine all Ci methods from Sundberg in one function
+# combine all CI methods from Sundberg in one function
 def CI(method_nr, r, alpha, theta_is_rate=True):
     match method_nr:
         case 1: c1, c2 = C1(r, alpha)
@@ -81,3 +82,5 @@ def CI(method_nr, r, alpha, theta_is_rate=True):
     if theta_is_rate:
         return c1, c2
     return 1 / c2, 1 / c1
+
+
