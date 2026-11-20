@@ -3,33 +3,39 @@ from scipy.stats import beta
 
 # --- Example: Clopper-Pearson Interval (Section 2.1 in Lindqvist) --------------
 
-n = 100
-alpha = 0.05
-theta = 0.5
-n_simulations = 10**7
 
-rng = np.random.default_rng()
+def clopper_pearson_interval(T, n, alpha, kind="two-sided"):
+    """kind: "upper", "lower" or "two-sided". """
+    if kind == "upper":
+        lower_bound = 0.0
+        upper_bound = 1.0 if T == n else beta.ppf(1 - alpha, T + 1, n - T)
+    elif kind == "lower":
+        lower_bound = 0.0 if T == 0 else beta.ppf(alpha, T, n + 1 - T)
+        upper_bound = 1.0
+    elif kind == "two-sided":
+        tail_alpha = alpha / 2
+        lower_bound = 0.0 if T == 0 else beta.ppf(tail_alpha, T, n + 1 - T)
+        upper_bound = 1.0 if T == n else beta.ppf(1 - tail_alpha, T + 1, n - T)
 
-# a[t] = upper limit for T = t, b[t] = lower limit for T = t  (t = 0, ..., n)
-a = np.empty(n + 1)
-b = np.empty(n + 1)
+    return lower_bound, upper_bound
 
-a[n] = 1.0   # a(n) = 1
-b[0] = 0.0   # b(0) = 0
 
-for t in range(0, n):          # t = 0, ..., n-1
-    a[t] = beta.ppf(1 - alpha, t + 1, n - t)
+if __name__ == "__main__":
+    theta = 0.5 # in [0, 1]
+    n = 100
+    alpha = 0.01
+    n_sim = 100_00
+    rng = np.random.default_rng()
+    T = rng.binomial(n=n, p=theta, size=n_sim)
 
-for t in range(1, n + 1):      # t = 1, ..., n
-    b[t] = beta.ppf(alpha, t, n + 1 - t)
+    coverage = 0
+    for T_obs in T:
+        lower_bound, upper_bound = clopper_pearson_interval(T_obs, n, alpha=alpha, kind="two-sided")
+        print(lower_bound, upper_bound)
+        if lower_bound <= theta <= upper_bound:
+            coverage += 1
+    print(coverage / n_sim)
 
-T = rng.binomial(n=n, p=theta, size=n_simulations)
 
-# upper CI: [0, a[T]]
-# lower CI: [b[T], 1]
-theta_in_upper_CI = theta <= a[T]
-theta_in_lower_CI = theta >= b[T]
 
-# should be >= 1 - alpha (Clopper-Pearson is conservative)
-print(theta_in_upper_CI.mean())
-print(theta_in_lower_CI.mean())
+

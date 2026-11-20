@@ -38,6 +38,6 @@ print(covered / n_sim)   # should be close to 1 - alpha
 
 
 """One cannot find a and b for censored data, because to get a and b one need the 
-distribution of bar theta and undeline theta."""
+distribution of bar theta and underline theta."""
 # TODO: find a possibility to get bar theta and underline theta
 # use the DGF and find inverse (should be possible bc we have DGF given)

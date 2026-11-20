@@ -56,8 +56,8 @@ def plot_c(col, ylim, ylabel, filename):
     return fig
 
 
-plot_c("c_lower", (0, 0.8), r"$c_l$", "fig_1a_sundberg_c_lower.pdf")
-plot_c("c_upper", (1, 8), r"$c_u$", "fig_1b_sundberg_c_upper.pdf")
+plot_c("c_lower", (0, 0.8), r"$c_l$", "figures/fig_1a_sundberg_c_lower.pdf")
+plot_c("c_upper", (1, 8), r"$c_u$", "figures/fig_1b_sundberg_c_upper.pdf")
 plt.show()
 
 # C1 and C2 differ from the paper because we use another parametrisation

@@ -1,6 +1,6 @@
-# Discover the problem that for C2 in Sundberg, for small n 
+# Discover the problem that for C2 in Sundberg, for small r 
 # the interval bounds don't fulfil c_l < c_u
-# Plot sample size n vs CI width
+# Plot r vs CI width
 
 import warnings
 
@@ -13,7 +13,7 @@ from sundberg import C2
 
 n = np.arange(0, 11)                    # 0, ...., 10
 
-alpha = 0.1        # in {0.01, 0.1} 
+alpha = 0.01        # in {0.01, 0.1} 
 color = "red" if alpha == 0.1 else "blue"
 
 # Multipliers for C2 from Sundberg (uncensored case: r = n)

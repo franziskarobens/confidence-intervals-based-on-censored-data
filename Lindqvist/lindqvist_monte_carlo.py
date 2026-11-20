@@ -81,18 +81,18 @@ def CI_corollary_4(T, n, c, k, m=100):
         raise ValueError("We condition on t > 0 to use Corollary 4.")
 
     # draw m samples of U
-    bar_theta = np.zeros(m)
+    bar_theta = []
 
     for i in range(m):
         rng = np.random.default_rng(i)
         U_sim = rng.exponential(scale=1.0, size=n)
         # solve for theta
-        bar_theta[i] = solve_theta_for_u(U_sim, t=T, c=c)
+        bar_theta.append(solve_theta_for_u(U_sim, t=T, c=c))
 
     ordered_theta = np.sort(bar_theta)
 
-    lower = ordered_theta[k - 1]       # R: sorted_theta[k]
-    upper = ordered_theta[m - k]       # R: sorted_theta[m - k + 1]
+    lower = ordered_theta[k - 1]       # in R: sorted_theta[k]
+    upper = ordered_theta[m - k]       # in R: sorted_theta[m - k + 1]
 
     #print(f"\nResults for k = {k} and m = {m}:")
     #print(f"Lower bound for theta with alpha = {round(1 - k/(m+1), 3)}   :   {round(lower, 3)}")
@@ -110,19 +110,19 @@ if __name__ == "__main__":
     theta = 1
     nu = 0.5
     c = nu * theta
+    rng = np.random.default_rng(2027)
 
     covered = 0
 
     for i in range(n_sim):
-        if i % 10 == 0:
+        if i % 100 == 0:
             print(f"n_sim = {i}")
-        rng = np.random.default_rng(i)
         U = rng.exponential(scale=1.0, size=n)
         T = compute_tau(theta, U, c)
         CI_corollary_4(T, n, c, k=5, m = 100)
 
         lower, upper = CI_corollary_4(T, n, c, k=5, m = 99) # k=5, m=99 for both sided 90% interval
-        covered += lower <= theta <= upper
+        covered += (lower <= theta <= upper)
 
 
     print(covered / n_sim)   # should be close to 1 - alpha

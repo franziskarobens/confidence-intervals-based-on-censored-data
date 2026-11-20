@@ -11,9 +11,6 @@ For a simulated pair u = (u1, u2) with order statistics u(1) <= u(2):
 
 Fiducial distribution (5):
   theta(u, t) = 2*u(1)   conditional on  u(2) >= 2*u(1)
-
-Optional: `pip install numba tqdm` makes the coverage simulation much faster
-and adds a progress bar. The script also runs without them.
 """
 
 import numpy as np
@@ -32,8 +29,8 @@ n_sim = 100_000
 U1 = rng.exponential(scale=1.0, size=n_sim)   # rexp(rate = 1) -> scale = 1/rate
 U2 = rng.exponential(scale=1.0, size=n_sim)
 
-u_min = np.minimum(U1, U2)   # u(1)
-u_max = np.maximum(U1, U2)   # u(2)
+u_min = np.minimum(U1, U2)
+u_max = np.maximum(U1, U2)
 
 # --- theta(u, t): unconditional piecewise solution -------------------------
 # theta = 2*u(1) if u(2) >= 2*u(1), else theta = u(2)
@@ -69,10 +66,11 @@ ax.hist(theta_full, bins=600, density=True, color="lightgray")
 for v in CI_full:
     ax.axvline(v, color="red", linestyle="--", linewidth=1)
 
-# Given: F_theta(x) = 2*exp(-2*x) - exp(-3*x)   (survival function)
-# Density = -d/dx F(x) = 4*exp(-2*x) - 3*exp(-3*x)
-density_theta = 4 * np.exp(-2 * x_grid) - 3 * np.exp(-3 * x_grid)
-ax.plot(x_grid, density_theta, color="red", linewidth=2,
+# Given: F_theta(x) = 1 - 2 *exp(- 3/2 *x) + exp(-2*x)
+# Density = d/dx F(x) = 3 * exp(- 3/2 * x) - 2 * exp(-2 * x)
+density_theta = 3 * np.exp(- 1.5 * x_grid) - 2 * np.exp(-2 * x_grid)
+
+ax.plot(x_grid, density_theta, color="red", linewidth=1,
         label="Theoretical density")
 ax.set_xlim(0, 5)
 ax.set_ylim(0, 1.5)
@@ -87,7 +85,7 @@ for v in CI_fiducial:
     ax.axvline(v, color="red", linestyle="--", linewidth=2)
 
 density_theta = 3 / 2 * np.exp(-3 / 2 * x_grid)
-ax.plot(x_grid, density_theta, color="red", linewidth=2,
+ax.plot(x_grid, density_theta, color="red", linewidth=1,
         label="Theoretical density Exp(3/2)")
 ax.set_xlim(0, 5)
 ax.set_ylim(0, 1.5)
@@ -170,14 +168,14 @@ for sim in tqdm(range(n_simulation)):
     Y = np.minimum(X, c_val)
 
     # Number of observed failures
-    R = np.sum(X < c_val)
+    R = np.sum(X <= c_val)
     R_values[sim] = R
 
     # Total observed time
-    S = Y.sum()
+    TTT = Y.sum()
 
-    # MLE: T = R/S
-    t_hat = R / S
+    # MLE: T = R / TTT
+    t_hat = R / TTT
     T_values[sim] = t_hat
 
     # Generate m = 1000 vectors U, each row U = (U1,...,U10) with Ui ~ Exp(1)
@@ -215,10 +213,10 @@ print("number of datasets =", n_simulation)
 print("m =", m, "\n")
 
 print("Coverage of lower bound:")
-print(f"{100 * lower_coverage:.2f} %\n")
+print(f"{lower_coverage}\n")
 
 print("Coverage of upper bound:")
-print(f"{100 * upper_coverage:.2f} %\n")
+print(f"{upper_coverage}\n")
 
 print("Coverage of two-sided interval:")
-print(f"{100 * two_sided_coverage:.2f} %\n")
+print(f"{two_sided_coverage}\n")

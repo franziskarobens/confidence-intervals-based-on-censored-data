@@ -8,7 +8,7 @@ alpha = 0.05
 
 # for left column, set t_c = 50
 # for right column, set t_c = 75
-t_c = 75
+t_c = 50
 r = int(np.sum(sundberg_data < t_c))
 TTT = np.sum(np.minimum(sundberg_data, t_c)) 
 MLE =  TTT / r
@@ -17,7 +17,7 @@ MLE =  TTT / r
 print(f"\nRate = 1 / theta\nCensoring time t_c = {t_c}")
 for m in range(1, 8):
     c_lower, c_upper = sundberg.CI(method_nr=m, r=r, alpha=alpha, theta_is_rate=False)
-    print(f"C{m}: [{c_lower * MLE:.5f}, {c_upper * MLE:.5f}]")
+    print(f"C{m}: [{c_lower * MLE:.2f}, {c_upper * MLE:.2f}]")
 
 
 # t_c = 50

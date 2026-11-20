@@ -63,7 +63,7 @@ def make_sundberg(method_nr: int) -> Method:
         return c_lower * sample.MLE, c_upper * sample.MLE 
     return method
 
-def make_lindqvist_theoretical(m: int, k: int) -> Method:
+def make_lindqvist_monte_carlo(m: int, k: int) -> Method:
     def method(sample, alpha):
         level = 2 * k / (m + 1)
         if alpha != level:
@@ -77,7 +77,7 @@ DGF_CONFIGS = [(199, 1), (999, 5), (99, 5), (999, 50)]   # alpha = 0.01, 0.01, 0
 # define all methods
 METHODS: dict[str, Method] = {
     **{f"C{i}_Sundberg": make_sundberg(i) for i in range(1, 8)},
-    **{f"Lindqvist_MC_k{k}_m{m}": make_lindqvist_theoretical(m, k) for m, k in DGF_CONFIGS},
+    **{f"Lindqvist_MC_k{k}_m{m}": make_lindqvist_monte_carlo(m, k) for m, k in DGF_CONFIGS},
 }
 
 # ---------------------------------------------------------------------------
@@ -132,9 +132,9 @@ def run_scenario(methods, theta, n, nu, alpha, n_sim, seed):
 
 
 def main():
-    alpha = 0.01
+    alpha = 0.1
     theta = 1.0
-    n_sim = 100
+    n_sim = 1000
 
     rows = []
     for n in (10, 50, 100, 1000): # 10, 50, 100, 1000
@@ -144,7 +144,7 @@ def main():
                                  seed=1000 * n + int(10 * nu))
 
     df = pd.DataFrame(rows)
-    df.to_csv(f"ci_comparison_alpha{alpha}.csv", index=False)
+    df.to_csv(f"data_comparison/ci_comparison_alpha{alpha}.csv", index=False)
 
 
 if __name__ == "__main__":

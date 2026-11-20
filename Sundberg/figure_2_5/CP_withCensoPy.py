@@ -21,15 +21,15 @@ from itertools import product
 # Parameters: every list is run through, all combinations are computed.
 # ---------------------------------------------------------------------------
 theta_list = [1]
-nu_list = [0.5, 1, 2, np.inf]    # in {0.5, 1, 2, np.inf}; np.inf = no censoring
-alpha_list = [0.05]              # in {0.01, 0.05, 0.1}
+nu_list = [0.5]    # in {0.5, 1, 2, np.inf}; np.inf = no censoring
+alpha_list = [0.1]              # in {0.01, 0.05, 0.1}
 Digits_list = [100]              # works for >= 50 (ignored if nu = np.inf)
-ci_type = 1                      # 1: one sided CIs, 2: two sided CI
+ci_type = 2                      # 1: one sided CIs, 2: two sided CI
 
 n_range = range(4, 51)           # 4, ..., 50
 methods = range(1, 8)            # C1, ..., C7
 
-overwrite = False                 # False: skip combinations whose CSV already exists
+overwrite = True                 # False: skip combinations whose CSV already exists
 
 out_dir = Path(__file__).resolve().parent
 csv_dir = out_dir / "non_coverage_probs"
